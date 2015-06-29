@@ -34,23 +34,11 @@ public partial class _Default : System.Web.UI.Page
             case "1":
                 sortColumn = "DocumentLabel"; 
                 break;
-            case "2":
-                sortColumn = "DocumentLabelCode"; 
-                break;
             case "3":
-                sortColumn = "DocumentLabelGuid"; 
-                break;
-            case "4":
                 sortColumn = "FileLocation"; 
                 break;
-            case "5":
-                sortColumn = "FileReference"; 
-                break;
-            case "6":
+            case "4":
                 sortColumn = "Reference"; 
-                break;
-            case "7":
-                sortColumn = "FileLink"; 
                 break;
         }
 
@@ -91,11 +79,11 @@ public partial class _Default : System.Web.UI.Page
             }
 
             sb.Append("[");
-            sb.Append("\"" + result.CreatedDate + "\",");
+            sb.Append("\"" + result.CreatedDate.ToString("dd/MM/YYYY") + "\",");
             sb.Append("\"" + result.DocumentLabel + "\",");
             //sb.Append("\"" + result.DocumentLabelCode + "\",");
             //sb.Append("\"" + result.DocumentLabelGuid + "\",");
-            sb.Append("\"<a href='" + result.FileLocation.Replace("T:","file://VM-MS-SPT-1B/t").Replace("\\","/") + "'>" + result.FileLocation.Replace("\\", "\\\\") + "</a>\",");
+            sb.Append("\"<a href='" + result.FileLocation.Replace("T:","file://VM-MS-SPT-1B/t").Replace("\\","/") + "'>" + result.FileReference + "</a>\",");
             //sb.Append("\"" + result.FileReference + "\",");
             sb.Append("\"" + result.Reference + "\"");
             sb.Append("]");
@@ -123,11 +111,11 @@ public partial class _Default : System.Web.UI.Page
 
         if (search != null)
         {
-            records = RBDocument.GetDocumentsWithFilter(displayStart, displayLength, search);
+            records = RBDocument.GetDocumentsWithFilter(displayStart, displayLength, search, sortColumn, sortOrder);
         }
         else
         {
-            records = RBDocument.GetDocuments(displayStart, displayLength);
+            records = RBDocument.GetDocuments(displayStart, displayLength, sortColumn, sortOrder);
         }
 
         return records;

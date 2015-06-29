@@ -20,7 +20,7 @@ public class RBDocument
     public string DocumentLabel { get; set; }
     public string DocumentLabelGuid { get; set; }
 
-    public static List<RBDocument> GetDocumentsWithFilter(int startNumber, int numberDocs, string reference)
+    public static List<RBDocument> GetDocumentsWithFilter(int startNumber, int numberDocs, string reference, string sortColumn, string sortOrder)
     {
         var con = ConfigurationManager.ConnectionStrings["RBDocMigration"].ToString();
 
@@ -28,7 +28,7 @@ public class RBDocument
 
         using (SqlConnection myConnection = new SqlConnection(con))
         {
-            string oString = "select * from Documents where Reference = @reference ORDER BY Reference OFFSET " + startNumber + " ROWS FETCH NEXT " + numberDocs + " ROWS ONLY";
+            string oString = "select * from Documents where Reference = @reference ORDER BY " + sortColumn + " " + sortOrder + " OFFSET " + startNumber + " ROWS FETCH NEXT " + numberDocs + " ROWS ONLY";
             SqlCommand oCmd = new SqlCommand(oString, myConnection);
             oCmd.Parameters.AddWithValue("@reference", reference);
             myConnection.Open();
@@ -52,7 +52,7 @@ public class RBDocument
         return documents;
     }
 
-    public static List<RBDocument> GetDocuments(int startNumber, int numberDocs)
+    public static List<RBDocument> GetDocuments(int startNumber, int numberDocs, string sortColumn, string sortOrder)
     {
         var con = ConfigurationManager.ConnectionStrings["RBDocMigration"].ToString();
 

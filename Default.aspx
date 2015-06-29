@@ -13,15 +13,44 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <title>Comino Document Browser | B&NES</title>
+    <title>Comino Migration</title>
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
     <link href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+    <style>
+        .navbar-brand { padding: 5px 5px 5px 5px !important; }
+        .navbar-brand img { height: 100% !important; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">
+                        <img src="/images/logo.svg" style="height: 100%" /></a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="mailto:IT_Helpdesk@bathnes.gov.uk">Report Issue</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
     <div class="jumbotron">
         <div class="container">
             <h1>Comino migration documents</h1>
-            <p>A viewer for Revs and Benefits documents migrated from Comino</p>
+            <p>Enter a reference in the Account number search field to show a list of documents for that account.</p>
         </div>
     </div>
     <div class="container">
@@ -32,7 +61,7 @@
                     <th>Document Label</th>
                     <!--<th>Document Label Code</th>
                     <th>Document Label Guid</th>-->
-                    <th>File Location</th>
+                    <th>File download</th>
                     <!--<th>File Reference</th>-->
                     <th>Reference</th>
                     <!--<th>File Link</th>-->
@@ -59,6 +88,9 @@
             "info": false,
             "bProcessing": true,
             "bServerSide": true,
+            "oLanguage": {
+                "sSearch": "Account number:"
+            },
             "sAjaxSource": "Default.aspx/GetTableData",
             "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
@@ -78,15 +110,8 @@
                         }
                     }
                 });
-            },
-            fnDrawCallback: function () {
-                $('.image-details').bind("click", showDetails);
             }
         });
-
-        function showDetails() {
-            //so something funky with the data
-        }
     </script>
 </body>
 </html>
