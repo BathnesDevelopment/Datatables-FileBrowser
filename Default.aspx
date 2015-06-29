@@ -15,7 +15,7 @@
     <![endif]-->
     <title>Comino Document Browser | B&NES</title>
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
-    <link href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
 </head>
 <body>
     <div class="jumbotron">
@@ -25,17 +25,17 @@
         </div>
     </div>
     <div class="container">
-        <table id="tblData" class="hover">
+        <table id="tblData" class="table">
             <thead>
                 <tr class="gridStyle">
                     <th>Created Date</th>
                     <th>Document Label</th>
-                    <th>Document Label Code</th>
-                    <th>Document Label Guid</th>
+                    <!--<th>Document Label Code</th>
+                    <th>Document Label Guid</th>-->
                     <th>File Location</th>
-                    <th>File Reference</th>
+                    <!--<th>File Reference</th>-->
                     <th>Reference</th>
-                    <th>File Link</th>
+                    <!--<th>File Link</th>-->
                 </tr>
             </thead>
             <tbody></tbody>
@@ -44,6 +44,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js" type="text/javascript"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js" type="text/javascript"></script>
     <script>
 
         $.ajaxSetup({
@@ -51,13 +52,11 @@
         });
 
         var table = $('#tblData').DataTable({
-            "filter": false,
+            "filter": true,
             "pagingType": "simple_numbers",
             "orderClasses": false,
             "order": [[0, "asc"]],
             "info": false,
-            "scrollY": "450px",
-            "scrollCollapse": true,
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "Default.aspx/GetTableData",

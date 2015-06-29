@@ -20,7 +20,7 @@ public class RBDocument
     public string DocumentLabel { get; set; }
     public string DocumentLabelGuid { get; set; }
 
-    public List<RBDocument> GetDocumentsWithFilter(string functionalArea, int numberDocs, string reference)
+    public static List<RBDocument> GetDocumentsWithFilter(int startNumber, int numberDocs, string reference)
     {
         var con = ConfigurationManager.ConnectionStrings["RBDocMigration"].ToString();
 
@@ -28,12 +28,10 @@ public class RBDocument
 
         using (SqlConnection myConnection = new SqlConnection(con))
         {
-            string oString = "select top " + numberDocs.ToString() + " from Documents where FunctionalArea = @fArea and Reference = @reference";
+            string oString = "select * from Documents where Reference = @reference ORDER BY Reference OFFSET " + startNumber + " ROWS FETCH NEXT " + numberDocs + " ROWS ONLY";
             SqlCommand oCmd = new SqlCommand(oString, myConnection);
-            oCmd.Parameters.AddWithValue("@fArea", functionalArea);
             oCmd.Parameters.AddWithValue("@reference", reference);
             myConnection.Open();
-
             using (SqlDataReader oReader = oCmd.ExecuteReader())
             {
                 while (oReader.Read())
@@ -46,13 +44,103 @@ public class RBDocument
                     doc.FileLocation = oReader["FileLocation"].ToString();
                     doc.FileReference = oReader["FileReference"].ToString();
                     doc.Reference = oReader["Reference"].ToString();
-
                     documents.Add(doc);
                 }
-
                 myConnection.Close();
             }
         }
         return documents;
+    }
+
+    public static List<RBDocument> GetDocuments(int startNumber, int numberDocs)
+    {
+        var con = ConfigurationManager.ConnectionStrings["RBDocMigration"].ToString();
+
+        List<RBDocument> documents = new List<RBDocument>();
+
+        using (SqlConnection myConnection = new SqlConnection(con))
+        {
+            string oString = "select * from Documents ORDER BY Reference OFFSET " + startNumber + " ROWS FETCH NEXT " + numberDocs + " ROWS ONLY";
+            SqlCommand oCmd = new SqlCommand(oString, myConnection);
+            myConnection.Open();
+
+            try
+            {
+                using (SqlDataReader oReader = oCmd.ExecuteReader())
+                {
+                    while (oReader.Read())
+                    {
+                        RBDocument doc = new RBDocument();
+                        doc.CreatedDate = DateTime.Parse(oReader["CreatedDate"].ToString());
+                        doc.DocumentLabel = oReader["DocumentLabel"].ToString();
+                        doc.DocumentLabelCode = oReader["DocumentLabelCode"].ToString();
+                        doc.DocumentLabelGuid = oReader["DocumentLabelGuid"].ToString();
+                        doc.FileLocation = oReader["FileLocation"].ToString();
+                        doc.FileReference = oReader["FileReference"].ToString();
+                        doc.Reference = oReader["Reference"].ToString();
+                        documents.Add(doc);
+                    }
+
+                    myConnection.Close();
+                }
+            } catch (Exception ex) { }
+        }
+        return documents;
+    }
+
+    public static int CountDocuments()
+    {
+        var con = ConfigurationManager.ConnectionStrings["RBDocMigration"].ToString();
+        int countDocs = 0;
+
+        using (SqlConnection myConnection = new SqlConnection(con))
+        {
+            string oString = "select count(*) As 'CountDocs' from Documents";
+            SqlCommand oCmd = new SqlCommand(oString, myConnection);
+            myConnection.Open();
+
+            try
+            {
+                using (SqlDataReader oReader = oCmd.ExecuteReader())
+                {
+                    while (oReader.Read())
+                    {
+                        countDocs = int.Parse(oReader["CountDocs"].ToString());
+                    }
+
+                    myConnection.Close();
+                }
+            } catch (Exception ex) { }
+        }
+        return countDocs;
+    }
+
+    public static int CountDocumentsWithFilter(string reference)
+    {
+        var con = ConfigurationManager.ConnectionStrings["RBDocMigration"].ToString();
+        int countDocs = 0;
+
+        using (SqlConnection myConnection = new SqlConnection(con))
+        {
+            string oString = "select count(*) As 'CountDocs' from Documents where Reference = @reference";
+            SqlCommand oCmd = new SqlCommand(oString, myConnection);
+            oCmd.Parameters.AddWithValue("@reference", reference);
+            myConnection.Open();
+
+            try
+            {
+                using (SqlDataReader oReader = oCmd.ExecuteReader())
+                {
+                    while (oReader.Read())
+                    {
+                        countDocs = int.Parse(oReader["CountDocs"].ToString());
+                    }
+
+                    myConnection.Close();
+                }
+            }
+            catch (Exception ex) { }
+        }
+        return countDocs;
     }
 }

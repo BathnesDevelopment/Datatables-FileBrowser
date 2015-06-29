@@ -61,13 +61,26 @@ public partial class _Default : System.Web.UI.Page
         }
 
         var hasMoreRecords = false;
+        var totalRecords = GetTotalRecords();
 
         var sb = new StringBuilder();
         sb.Append(@"{" + "\"sEcho\": " + echo + ",");
-        sb.Append("\"recordsTotal\": " + GetTotalRecords(sortColumn, sortOrder) + ",");
-        sb.Append("\"recordsFiltered\": " + GetTotalRecordsWithFilter(search, sortColumn, sortOrder) + ",");
-        sb.Append("\"iTotalRecords\": " + records.Count() + ",");
-        sb.Append("\"iTotalDisplayRecords\": " + records.Count() + ",");
+        sb.Append("\"recordsTotal\": " + totalRecords + ",");
+
+        if (search != null)
+        {
+            var totalFiltered = GetTotalRecordsWithFilter(search);
+            sb.Append("\"recordsFiltered\": " + totalFiltered + ",");
+            sb.Append("\"iTotalRecords\": " + totalRecords + ",");
+            sb.Append("\"iTotalDisplayRecords\": " + totalFiltered + ",");
+        }
+        else
+        {
+            sb.Append("\"recordsFiltered\": " + totalRecords + ",");
+            sb.Append("\"iTotalRecords\": " + totalRecords + ",");
+            sb.Append("\"iTotalDisplayRecords\": " + totalRecords + ",");
+        }
+
         sb.Append("\"aaData\": [");
 
         foreach (var result in records)
@@ -80,12 +93,11 @@ public partial class _Default : System.Web.UI.Page
             sb.Append("[");
             sb.Append("\"" + result.CreatedDate + "\",");
             sb.Append("\"" + result.DocumentLabel + "\",");
-            sb.Append("\"" + result.DocumentLabelCode + "\",");
-            sb.Append("\"" + result.DocumentLabelGuid + "\",");
-            sb.Append("\"" + result.FileLocation + "\",");
-            sb.Append("\"" + result.FileReference + "\",");
-            sb.Append("\"" + result.Reference + "\",");
-            sb.Append("\"<img class='image-details' src='images/details-icon.png' runat='server' height='16' width='16' alt='View Details'/>\"");
+            //sb.Append("\"" + result.DocumentLabelCode + "\",");
+            //sb.Append("\"" + result.DocumentLabelGuid + "\",");
+            sb.Append("\"<a href='" + result.FileLocation.Replace("T:","file://VM-MS-SPT-1B/t").Replace("\\","/") + "'>" + result.FileLocation.Replace("\\", "\\\\") + "</a>\",");
+            //sb.Append("\"" + result.FileReference + "\",");
+            sb.Append("\"" + result.Reference + "\"");
             sb.Append("]");
             hasMoreRecords = true;
         }
@@ -93,65 +105,31 @@ public partial class _Default : System.Web.UI.Page
         return sb.ToString();
     }
 
-
-    private static int GetTotalRecordsWithFilter(string search, string sortColumn, string sortOrder)
+    private static int GetTotalRecordsWithFilter(string search)
     {
-        return 10;
+        return RBDocument.CountDocumentsWithFilter(search);
     }
 
-    private static int GetTotalRecords(string sortColumn, string sortOrder)
+    private static int GetTotalRecords()
     {
-        return 10;
+        return RBDocument.CountDocuments();
     }
 
     private static IEnumerable<RBDocument> GetRecordsFromDatabaseWithFilter(string search, string sortColumn, string sortOrder, int displayLength, int displayStart)
     {
         // At this point you can call to your database to get the data
         // but I will just populate a sample collection in code
-        var records = new List<RBDocument>
-            {
-                new RBDocument
-                {
-                    CreatedDate = DateTime.Now,
-                    DocumentLabel = "Label",
-                    DocumentLabelCode = "Code",
-                    DocumentLabelGuid = "Guid",
-                    FileLocation = "Location",
-                    FileReference = "FileRef",
-                    Reference = "123456"
-                },
-                new RBDocument
-                {
-                    CreatedDate = DateTime.Now,
-                    DocumentLabel = "Label",
-                    DocumentLabelCode = "Code",
-                    DocumentLabelGuid = "Guid",
-                    FileLocation = "Location",
-                    FileReference = "FileRef",
-                    Reference = "7648747"
-                },
-                new RBDocument
-                {
-                    CreatedDate = DateTime.Now,
-                    DocumentLabel = "Label",
-                    DocumentLabelCode = "Code",
-                    DocumentLabelGuid = "Guid",
-                    FileLocation = "Location",
-                    FileReference = "FileRef",
-                    Reference = "45624626"
-                }
-            };
+        var records = new List<RBDocument>();
 
-        var orderedResults = sortOrder == "asc"
-                         ? records.OrderBy(o => o.CreatedDate)
-                         : records.OrderByDescending(o => o.CreatedDate);
+        if (search != null)
+        {
+            records = RBDocument.GetDocumentsWithFilter(displayStart, displayLength, search);
+        }
+        else
+        {
+            records = RBDocument.GetDocuments(displayStart, displayLength);
+        }
 
-        var itemsToSkip = displayStart == 0
-                          ? 0
-                          : displayStart + 1;
-
-        var pagedResults = orderedResults.Skip(itemsToSkip).Take(displayLength).ToList();
-
-        return pagedResults;
+        return records;
     }
 }
