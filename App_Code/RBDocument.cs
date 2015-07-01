@@ -19,6 +19,7 @@ public class RBDocument
     public string DocumentLabelCode { get; set; }
     public string DocumentLabel { get; set; }
     public string DocumentLabelGuid { get; set; }
+    public string FunctionalArea { get; set; }
 
     public static List<RBDocument> GetDocumentsWithFilter(int startNumber, int numberDocs, string reference, string sortColumn, string sortOrder)
     {
@@ -44,6 +45,7 @@ public class RBDocument
                     doc.FileLocation = oReader["FileLocation"].ToString();
                     doc.FileReference = oReader["FileReference"].ToString();
                     doc.Reference = oReader["Reference"].ToString();
+                    doc.FunctionalArea = oReader["FunctionalArea"].ToString();
                     documents.Add(doc);
                 }
                 myConnection.Close();

@@ -79,13 +79,13 @@ public partial class _Default : System.Web.UI.Page
             }
 
             sb.Append("[");
-            sb.Append("\"" + result.CreatedDate.ToString("dd/MM/YYYY") + "\",");
+            sb.Append("\"" + result.CreatedDate.ToString("dd/MM/yyyy") + "\",");
             sb.Append("\"" + result.DocumentLabel + "\",");
             //sb.Append("\"" + result.DocumentLabelCode + "\",");
             //sb.Append("\"" + result.DocumentLabelGuid + "\",");
             sb.Append("\"<a href='" + result.FileLocation.Replace("T:","file://VM-MS-SPT-1B/t").Replace("\\","/") + "'>" + result.FileReference + "</a>\",");
-            //sb.Append("\"" + result.FileReference + "\",");
-            sb.Append("\"" + result.Reference + "\"");
+            sb.Append("\"" + result.Reference + "\",");
+            sb.Append("\"" + result.FunctionalArea + "\"");
             sb.Append("]");
             hasMoreRecords = true;
         }

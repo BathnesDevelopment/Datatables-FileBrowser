@@ -54,6 +54,8 @@
         </div>
     </div>
     <div class="container">
+        <h3 id="hdrName"></h3>
+        <p class="lead" id="pAddress"></p>
         <table id="tblData" class="table">
             <thead>
                 <tr class="gridStyle">
@@ -64,7 +66,7 @@
                     <th>File download</th>
                     <!--<th>File Reference</th>-->
                     <th>Reference</th>
-                    <!--<th>File Link</th>-->
+                    <th>Functional area</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -103,6 +105,35 @@
                         var json = jQuery.parseJSON(msg.d);
                         fnCallback(json);
                         $("#tblData").show();
+
+                        if (json && json.aaData && json.aaData.length > 0) {
+                            // Call to get the account details as well.
+                            var ref = json.aaData[0][3];
+                            var functionalArea = json.aaData[0][4];
+                            var type = '';
+                            if (functionalArea == 'Benefits') type = 'C';
+                            if (functionalArea == 'NNDR') type = 'N';
+                            if (functionalArea == 'Revenues') type = 'A';
+                            $.support.cors = true;
+                            $.ajax({
+                                url: 'http://vm-ms-spt-1a:8085/Service1.svc/GetData',
+                                dataType: "json",
+                                type: 'POST',
+                                async: false,
+                                contentType: "application/json; charset=utf-8",
+                                data: '{ "value": "' + ref + '", "type": "' + type + '" }',
+                                success: function (data) {
+                                    if (data && data.GetDataResult && data.GetDataResult.length == 4) {
+                                        $('#hdrName').text(data.GetDataResult[2]);
+                                        $('#pAddress').text(data.GetDataResult[3]);
+                                    }
+                                }
+                            });
+                        } else {
+                            $('#hdrName').text('');
+                            $('#pAddress').text('');
+                        }
+
                     },
                     error: function (xhr, textStatus, error) {
                         if (typeof console == "object") {
